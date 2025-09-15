@@ -1,0 +1,7 @@
+echo Запуск тестового скрипта
+echo Текущий путь: $PWD
+echo Текущий пользователь: $USER
+ls
+cd Documents
+echo Тест завершен
+exit

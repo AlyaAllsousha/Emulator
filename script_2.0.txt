@@ -1,0 +1,18 @@
+# Test Script
+echo === ТЕСТ ПАРАМЕТРОВ VFS ===
+echo Параметр 1: Проверка переменных
+echo Домашняя директория: $HOME
+echo Пользователь: $USER
+
+echo Параметр 2: Навигация
+pwd
+ls
+cd ..
+pwd
+ls
+
+echo Параметр 3: Обработка ошибок
+unknown_command_should_fail
+cd non_existent_directory
+
+echo === ТЕСТ ЗАВЕРШЕН ===
