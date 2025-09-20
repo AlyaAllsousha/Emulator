@@ -3,15 +3,116 @@ from tkinter import scrolledtext
 import re
 from datetime import datetime
 import os
+import zipfile
+import sys
+import argparse
+from pathlib import Path
+import base64
+
+class VFS:
+    def __init__(self, zip_path = None):
+        self.filesystem = {}
+        self.curr_dir = "/"
+        if zip_path:
+            self.load_from_zip(zip_path)
+        else:
+            self.create_default_vfs()
+    def load_from_zip(self, zip_path):
+        try:
+            if not os.path.exists(zip_path):
+                raise FileNotFoundError(f"ZIP-файл не найден: {zip_path}")
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                for file_info in zip_ref.infolist():
+                    if not file_info.is_dir():
+                        content = zip_ref.read(file_info.filename)
+                        try:
+                            content = content.decode('utf-8')
+                        except UnicodeDecodeError:
+                            content = base64.b64encode(content).decode('utf-8')
+                        self.filesystem[file_info.filename] = content
+            
+            print(f"VFS загружена из {zip_path}")
+            
+        except zipfile.BadZipFile:
+            raise ValueError(f"Неверный формат ZIP-файла: {zip_path}")
+        except Exception as e:
+            raise Exception(f"Ошибка загрузки VFS: {str(e)}")
+    
+    def create_default_vfs(self):
+        self.filesystem = {
+            "bin/": None,
+            "bin/app.exe": "base64:ZXhlY3V0YWJsZSBiaW5hcnkgZGF0YQ==",
+            "documents/": None,
+            "documents/report.txt": "Отчет за 2025 год \nВсе работает отлично!",
+            "documents/projects/": None,
+            "documents/projects/project1.py": "print('Hello VFS!')\n# Python код",
+            "documents/projects/project2.c": "// C код\n#include <stdio.h>\nint main() { return 0; }",
+            "config/": None,
+            "config/settings.ini": "[settings]\nlanguage = ru\ntheme = dark",
+            "temp/": None
+        }
+    def list_dir(self, path="."):
+        if path == ".":
+            paht = self.curr_dir
+        elif not path.startswith("/"):
+            paht = os.path.join(self.curr_dir, path).replace("\\", "/")
+        items = []
+        for file_path in self.filesystem.keys():
+            dir_path = os.path.dirname(file_path)
+            if dir_path == path.rstrip("/"):
+                items.append(os.path.basename(file_path))
+            elif file_path.startswith(path) and file_path!= path:
+                rel_path = file_path[len(path):].lstrip("/")
+                if "/" in rel_path:
+                    folder = rel_path.split("/")[0]+"/"
+                    if folder not in items:
+                        items.append(folder)
+                else:
+                    items.append(rel_path)
+        return sorted(items)
+
+    def read_file(self, file_path):
+        if not file_path.startswith("/"):
+            file_path = os.path.join(self.current_dir, file_path).replace("\\", "/")
+        if file_path in self.filesystem:
+            content = self.filesystem[file_path]
+            if content and content.startswith("base64:"):
+                return base64.b64decode(content[7:])
+            return content
+        return None
+
+    def change_dir(self, new_dir):
+        if new_dir == "..":
+            if self.curr_dir != "/":
+                self.curr_dir = os.path.dirname(self.curr_dir.rstrip("/")) or "/"
+            return True
+
+        if not new_dir.startswith("/"):
+            new_dir = os.path.join(self.curr_dir, new_dir).replace("\\", "/")
+
+        for path in self.filesystem.keys():
+            if path.startswith(new_dir) or new_dir == "/":
+                self.curr_dir = new_dir
+                return True
+        return False
+    def get_curr_path(self):
+        return self.curr_dir
 class TerminalEmulator:
-    def __init__(self, root, script_path=None):
+    
+    def __init__(self, root, script_path=None, vfs_path=None):
         self.root = root
         self.vfs_path = os.getcwd()
         self.root.title("VFS")
+
+        try:
+            self.vfs = VFS(vfs_path)
+        except Exception as e:
+            self.print_output(f"Ошибка VFS, {str(e)}")
+            self.root.quit()
+            return 
         self.script_path = script_path
         main_frame = tk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True)
-        
         self.output_area = scrolledtext.ScrolledText(main_frame)
         self.output_area.pack(fill=tk.BOTH, expand=True)
         self.output_area.config(state=tk.DISABLED)
@@ -36,7 +137,7 @@ class TerminalEmulator:
 
     def print_debug_info(self):
         self.print_output("TERMINAL DEBUG INFO")
-        self.print_output(f"VFS Path: {self.parse_env_var("$HOME")}")
+        self.print_output(f"VFS Path: {getattr(self, 'vfs_path', 'default in memory')}")
         self.print_output(f"Prompt: '{self.parse_env_var("$HOME")}>'")
         self.print_output(f"Script: {self.script_path}")
         self.print_output("")
