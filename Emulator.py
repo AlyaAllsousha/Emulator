@@ -24,7 +24,6 @@ class VFS:
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 for file_info in zip_ref.infolist():
                     if file_info.is_dir():
-                        # ДОБАВЛЕНО: Добавляем директории
                         dir_path = file_info.filename
                         if not dir_path.endswith('/'):
                             dir_path += '/'
@@ -34,7 +33,6 @@ class VFS:
                         try:
                             content = content.decode('utf-8')
                         except UnicodeDecodeError:
-                            # ИЗМЕНЕНО: Исправлено форматирование base64
                             content = "base64:" + base64.b64encode(content).decode('utf-8')
                         self.filesystem[file_info.filename] = content
             
@@ -46,7 +44,6 @@ class VFS:
             raise Exception(f"Ошибка загрузки VFS: {str(e)}")
     
     def create_default_vfs(self):
-        # ДОБАВЛЕНО: Добавлена корневая директория
         self.filesystem = {
             "/": None,
             "bin/": None,
@@ -88,18 +85,15 @@ class VFS:
         if normalized_path in self.filesystem and not normalized_path.endswith("/"):
             return [os.path.basename(normalized_path)]
         
-        # Убедимся, что путь заканчивается на / для директорий
         if not normalized_path.endswith("/") and normalized_path != "/":
             normalized_path += "/"
         
         items = set()
         
         for file_path in self.filesystem.keys():
-            # Для корневой директории
             if normalized_path == "/":
                 if file_path == "/":
                     continue
-                # Берем первый элемент пути
                 if "/" in file_path:
                     first_item = file_path.split("/")[0]
                     if "/" in file_path[len(first_item):]:
@@ -109,14 +103,11 @@ class VFS:
                 else:
                     items.add(file_path)
             else:
-                # Проверяем, находится ли файл в запрашиваемой директории
                 if file_path.startswith(normalized_path):
-                    # Извлекаем относительный путь
                     rel_path = file_path[len(normalized_path):]
                     if not rel_path:
                         continue
                     
-                    # Если есть вложенность, добавляем только первую часть
                     if "/" in rel_path:
                         first_part = rel_path.split("/")[0]
                         items.add(first_part + "/")
@@ -127,7 +118,6 @@ class VFS:
     def read_file(self, file_path):
         normalized_path = self.normalize_path(file_path)
         
-        # Если путь указывает на директорию
         if normalized_path.endswith("/"):
             return None
         
@@ -146,14 +136,12 @@ class VFS:
         
         normalized_path = self.normalize_path(new_dir)
         
-        # Проверяем, существует ли директория
         dir_path = normalized_path + "/" if not normalized_path.endswith("/") else normalized_path
         
         if dir_path in self.filesystem:
             self.curr_dir = normalized_path
             return True
         
-        # Проверяем, существует ли путь как префикс для других путей
         for path in self.filesystem.keys():
             if path.startswith(normalized_path + "/") or path == normalized_path:
                 self.curr_dir = normalized_path
@@ -173,7 +161,6 @@ class VFS:
             return content
         return None
     
-    # ИСПРАВЛЕНО: Метод tree_traverse теперь правильно работает
     def tree_traverse(self, path, prefix="", depth=-1, current_depth=1):
         if depth >= 0 and current_depth > depth:
             return []
@@ -184,7 +171,6 @@ class VFS:
         result = []
         items = self.list_dir(normalized_path)
         
-        # Если это не корневая директория и она пустая
         if not items and normalized_path != "/":
             return []
         
@@ -193,7 +179,7 @@ class VFS:
             
             result.append(prefix + ("└── " if is_last else "├── ") + item)
             
-            if item.endswith("/"):  # Это директория
+            if item.endswith("/"): 
                 next_prefix = prefix + ("    " if is_last else "│   ")
                 result.extend(self.tree_traverse(
                     normalized_path + item, 
@@ -208,7 +194,6 @@ class VFS:
 class TerminalEmulator:
     def __init__(self, root, script_path=None, vfs_path=None):
         self.root = root
-        # ИЗМЕНЕНО: Исправлена инициализация vfs_path
         self.vfs_path = vfs_path or os.getcwd()
         self.root.title("VFS Terminal Emulator")
 
@@ -221,7 +206,6 @@ class TerminalEmulator:
         
         self.script_path = script_path
         main_frame = tk.Frame(self.root)
-        # ДОБАВЛЕНО: Добавлены отступы для улучшения внешнего вида
         main_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
         self.output_area = scrolledtext.ScrolledText(main_frame, height=20)
@@ -231,7 +215,6 @@ class TerminalEmulator:
         input_frame = tk.Frame(main_frame)
         input_frame.pack(fill=tk.X, pady=(5, 0))
 
-        # ДОБАВЛЕНО: Установка переменных окружения
         os.environ["DATE"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         os.environ["PWD"] = self.vfs.get_curr_path()
         os.environ["USER"] = os.getlogin() if hasattr(os, 'getlogin') else "user"
