@@ -1,18 +1,36 @@
-# Test Script
-echo === ТЕСТ ПАРАМЕТРОВ VFS ===
-echo Параметр 1: Проверка переменных
-echo Домашняя директория: $HOME
-echo Пользователь: $USER
-
-echo Параметр 2: Навигация
+echo ===== Тестирование команды pwd =====
+pwd
+echo ===== Тестирование команды ls =====
+ls
+ls documents
+ls /documents/projects
+echo ===== Тестирование команды cd =====
+cd documents
+pwd
+ls
+cd projects
 pwd
 ls
 cd ..
 pwd
-ls
+cd /
+pwd
 
-echo Параметр 3: Обработка ошибок
-unknown_command_should_fail
-cd non_existent_directory
+echo ===== Тестирование команды tree =====
+tree
+tree documents
+tree -L 1 documents
+tree -L 2 documents
 
-echo === ТЕСТ ЗАВЕРШЕН ===
+echo ===== Тестирование команды tac =====
+tac documents/report.txt
+tac documents/projects/project1.py
+
+echo ===== Тестирование обработки ошибок =====
+ls несуществующая_директория
+cd несуществующая_директория
+tac несуществующий_файл
+tree несуществующая_директория
+
+echo ===== Тестирование завершено =====
+"""
