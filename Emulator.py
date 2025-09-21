@@ -228,4 +228,3 @@ root = tk.Tk()
 script = "script_2.0.txt"
 terminal = TerminalEmulator(root, script)
 root.mainloop()
-
