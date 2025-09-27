@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 import os
 import zipfile
-
+import argparse
 from pathlib import Path
 import base64
 
@@ -39,7 +39,7 @@ class VFS:
             print(f"VFS загружена из {zip_path}")
             
         except zipfile.BadZipFile:
-            raise ValueError(f"Неверный формат ZIP-фильма: {zip_path}")
+            raise ValueError(f"Неверный формат ZIP-файла: {zip_path}")
         except Exception as e:
             raise Exception(f"Ошибка загрузки VFS: {str(e)}")
     
@@ -358,7 +358,38 @@ class TerminalEmulator:
                 self.print_output(line)
         except Exception as e:
             self.print_output(f"Ошибка tac: {str(e)}")
+    def cmd_script(self, args):
+        if not args:
+            self.print_output("Использование: script <путь_к_скрипту>")
+            return
     
+        script_path = args[0]
+        if not os.path.exists(script_path):
+            self.print_output(f"Ошибка: скрипт '{script_path}' не найден")
+            return
+    
+        self.script_path = script_path
+        self.startup_script()
+
+    def cmd_vfs(self, args):
+        if not args:
+            self.print_output("Использование: vfs")
+            return
+    
+        vfs_path = args[0]
+        if not os.path.exists(vfs_path):
+            self.print_output(f"Ошибка: арxив '{vfs_path}' не найден совсем")
+            return
+    
+        try:
+            self.vfs.load_from_zip(vfs_path)
+            self.vfs_path = vfs_path
+            self.update_environment()
+            self.print_output(f"VFS успешно загружена из '{vfs_path}'")
+            self.print_output(f"Текущая директория: {self.vfs.get_curr_path()}")
+        except Exception as e:
+            self.print_output(f"Ошибка загрузки VFS: {str(e)}")
+
     def command_reader(self, command):
         parsed = self.parse_env_var(command)
         cmd_parts = parsed.split()
@@ -386,6 +417,10 @@ class TerminalEmulator:
             self.cmd_tree(args)
         elif cmd == "tac":
             self.cmd_tac(args)
+        elif cmd == "script":
+            self.cmd_script(args)
+        elif cmd == "vfs":
+            self.cmd_vfs(args)
         else:
             self.print_output(f"Ошибка: неизвестная команда '{cmd}'")
     
@@ -400,11 +435,15 @@ class TerminalEmulator:
             self.command_reader(command)
         except Exception as e:
             self.print_output(f"Ошибка: {str(e)}")
-   
     
-                        
-script_path = "script_2.0.txt"
+        
+    
+    
+
+    
 root = tk.Tk()
-              
-terminal = TerminalEmulator(root, script_path, "")
-root.mainloop()
+root.geometry("800x600") 
+
+terminal = TerminalEmulator(root, "", "")
+root.mainloop()                     
+root = tk.Tk()
