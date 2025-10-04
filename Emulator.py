@@ -190,7 +190,6 @@ class VFS:
                 ))
         
         return result
-<<<<<<< HEAD
     
     def create_file(self, file_path, content=""):
         normalized_path = self.normalize_path(file_path)
@@ -275,11 +274,8 @@ class VFS:
             return True, f"VFS сохранена в {zip_path}"
         except Exception as e:
             return False, f"Ошибка сохранения VFS: {str(e)}"
-        
-=======
+    
 
-
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
 class TerminalEmulator:
     def __init__(self, root, script_path=None, vfs_path=None):
         self.root = root
@@ -371,7 +367,7 @@ class TerminalEmulator:
         self.print_output("Завершение выполнения скрипта")
         self.print_output("")
     
-<<<<<<< HEAD
+
     def cmd_touch(self, args):
         if not args:
             self.print_output("Введите имя файла")
@@ -502,7 +498,6 @@ class TerminalEmulator:
         self.script_path = script_path
         self.startup_script()
 
-=======
     def cmd_ls(self, args):
         path = args[0] if args else "."
         
@@ -591,7 +586,6 @@ class TerminalEmulator:
         self.script_path = script_path
         self.startup_script()
 
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
     def cmd_vfs(self, args):
         if not args:
             self.print_output("Использование: vfs")
@@ -610,10 +604,7 @@ class TerminalEmulator:
             self.print_output(f"Текущая директория: {self.vfs.get_curr_path()}")
         except Exception as e:
             self.print_output(f"Ошибка загрузки VFS: {str(e)}")
-<<<<<<< HEAD
     
-=======
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
 
     def command_reader(self, command):
         parsed = self.parse_env_var(command)
@@ -633,11 +624,7 @@ class TerminalEmulator:
         elif cmd == "pwd":
             self.cmd_pwd()
         elif cmd == "echo":
-<<<<<<< HEAD
             self.print_output(" ".join(args).rstrip('"').lstrip('"'))
-=======
-            self.print_output(" ".join(args))
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
         elif cmd == "cls":
             self.output_area.config(state=tk.NORMAL)
             self.output_area.delete(1.0, tk.END)
@@ -646,15 +633,12 @@ class TerminalEmulator:
             self.cmd_tree(args)
         elif cmd == "tac":
             self.cmd_tac(args)
-<<<<<<< HEAD
         elif cmd == "touch":
             self.cmd_touch(args)
         elif cmd == "cp":
             self.cmd_cp(args)
         elif cmd == "savevfs":
             self.cmd_savevfs(args)
-=======
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
         elif cmd == "script":
             self.cmd_script(args)
         elif cmd == "vfs":
@@ -668,11 +652,7 @@ class TerminalEmulator:
         if not command:
             return
         
-<<<<<<< HEAD
         self.print_output(f"{self.prompt_text}> {command}")
-=======
-        self.print_output(f"{self.prompt_text} {command}")
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
         try:
             self.command_reader(command)
         except Exception as e:
@@ -683,17 +663,8 @@ class TerminalEmulator:
     
 
     
-<<<<<<< HEAD
 root = tk.Tk()
 root.geometry("800x600") 
 
 terminal = TerminalEmulator(root, "", "")
 root.mainloop()                     
-=======
-root = tk.Tk()
-root.geometry("800x600") 
-
-terminal = TerminalEmulator(root, "", "")
-root.mainloop()                     
-root = tk.Tk()
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
