@@ -1,0 +1,1 @@
+[settings]\nlanguage = ru\ntheme = dark

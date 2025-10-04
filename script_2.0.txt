@@ -1,18 +1,61 @@
-# Test Script
-echo === ТЕСТ ПАРАМЕТРОВ VFS ===
-echo Параметр 1: Проверка переменных
-echo Домашняя директория: $HOME
-echo Пользователь: $USER
+# Тестовый скрипт для VFS Terminal Emulator
+# Демонстрация всех команд, включая touch и cp
 
-echo Параметр 2: Навигация
+echo "=== Начало тестирования VFS команд ==="
+
+echo "1. Тестирование базовых команд"
 pwd
 ls
-cd ..
-pwd
+ls documents/
+
+echo "2. Тестирование команды touch"
+touch newfile1.txt
+touch newfile2.txt
+touch documents/new_report.md
+touch temp/temp_file.tmp
+
+echo "3. Проверка созданных файлов"
 ls
+ls documents/
+ls temp/
 
-echo Параметр 3: Обработка ошибок
-unknown_command_should_fail
-cd non_existent_directory
+echo "4. Тестирование команды cp"
+cp documents/report.txt report_backup.txt
+cp documents/projects/project1.py project1_backup.py
+cp config/settings.ini documents/settings_backup.ini
+cp newfile1.txt temp/copied_file.txt
 
-echo === ТЕСТ ЗАВЕРШЕН ===
+echo "5. Проверка скопированных файлов"
+ls
+ls documents/
+ls temp/
+
+echo "6. Тестирование обработки ошибок для touch"
+touch documents/  
+touch newfile1.txt  
+touch invalid_dir/nonexistent/file.txt  
+echo "7. Тестирование обработки ошибок для cp"
+cp nonexistent.txt backup.txt  
+cp documents/ backup  
+cp report.txt documents/  
+echo "8. Тестирование tree"
+tree
+tree -L 2 documents/
+
+echo "9. Тестирование tac"
+echo "--- Содержимое report_backup.txt (reversed) ---"
+tac report_backup.txt
+
+echo "10. Сохранение состояния VFS"
+savevfs test_save.vfs.zip
+echo "VFS сохранена в test_save.vfs.zip"
+
+echo "11. Загрузка VFS из файла"
+vfs test_save.vfs.zip
+echo "VFS загружена из test_save.vfs.zip"
+
+echo "12. Проверка состояния после загрузки"
+ls
+tree
+
+echo "=== Тестирование завершено ==="

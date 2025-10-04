@@ -1,0 +1,1 @@
+print('Hello VFS!')\n# Python код
