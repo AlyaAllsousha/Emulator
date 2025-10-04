@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Тестовый скрипт для VFS Terminal Emulator
 # Демонстрация всех команд, включая touch и cp
 
@@ -34,11 +33,13 @@ ls temp/
 echo "6. Тестирование обработки ошибок для touch"
 touch documents/  
 touch newfile1.txt  
-touch invalid_dir/nonexistent/file.txt  
+touch invalid_dir/nonexistent/file.txt 
+
 echo "7. Тестирование обработки ошибок для cp"
 cp nonexistent.txt backup.txt  
 cp documents/ backup  
 cp report.txt documents/  
+
 echo "8. Тестирование tree"
 tree
 tree -L 2 documents/
@@ -52,7 +53,7 @@ savevfs test_save.vfs.zip
 echo "VFS сохранена в test_save.vfs.zip"
 
 echo "11. Загрузка VFS из файла"
-vfs test_save.vfs.zip
+loadvfs test_save.vfs.zip
 echo "VFS загружена из test_save.vfs.zip"
 
 echo "12. Проверка состояния после загрузки"
@@ -60,41 +61,3 @@ ls
 tree
 
 echo "=== Тестирование завершено ==="
-=======
-echo ===== Тестирование команды pwd =====
-pwd
-echo ===== Тестирование команды ls =====
-ls
-ls documents
-ls /documents/projects
-echo ===== Тестирование команды cd =====
-cd documents
-pwd
-ls
-cd projects
-pwd
-ls
-cd ..
-pwd
-cd /
-pwd
-
-echo ===== Тестирование команды tree =====
-tree
-tree documents
-tree -L 1 documents
-tree -L 2 documents
-
-echo ===== Тестирование команды tac =====
-tac documents/report.txt
-tac documents/projects/project1.py
-
-echo ===== Тестирование обработки ошибок =====
-ls несуществующая_директория
-cd несуществующая_директория
-tac несуществующий_файл
-tree несуществующая_директория
-
-echo ===== Тестирование завершено =====
-"""
->>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
