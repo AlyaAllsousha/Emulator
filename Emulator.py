@@ -190,6 +190,7 @@ class VFS:
                 ))
         
         return result
+<<<<<<< HEAD
     
     def create_file(self, file_path, content=""):
         normalized_path = self.normalize_path(file_path)
@@ -275,6 +276,10 @@ class VFS:
         except Exception as e:
             return False, f"Ошибка сохранения VFS: {str(e)}"
         
+=======
+
+
+>>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
 class TerminalEmulator:
     def __init__(self, root, script_path=None, vfs_path=None):
         self.root = root
@@ -366,6 +371,7 @@ class TerminalEmulator:
         self.print_output("Завершение выполнения скрипта")
         self.print_output("")
     
+<<<<<<< HEAD
     def cmd_touch(self, args):
         if not args:
             self.print_output("Введите имя файла")
@@ -496,6 +502,96 @@ class TerminalEmulator:
         self.script_path = script_path
         self.startup_script()
 
+=======
+    def cmd_ls(self, args):
+        path = args[0] if args else "."
+        
+        try:
+            items = self.vfs.list_dir(path)
+            if not items:
+                self.print_output("Директория пуста")
+                return
+            
+            for item in items:
+                self.print_output(item)
+        except Exception as e:
+            self.print_output(f"Ошибка ls: {str(e)}")
+    
+    def cmd_cd(self, args):
+        if not args:
+            target = "/"
+        else:
+            target = args[0]
+        
+        try:
+            success = self.vfs.change_dir(target)
+            if not success:
+                self.print_output(f"cd: {target}: Нет такой директории")
+            else:
+                self.update_environment()
+        except Exception as e:
+            self.print_output(f"Ошибка cd: {str(e)}")
+    
+    def cmd_pwd(self):
+        self.print_output(self.vfs.get_curr_path())
+    
+    def cmd_tree(self, args):
+        path = args[0] if args else "."
+        depth = -1
+        
+        if len(args) >= 2 and args[0] == "-L":
+            try:
+                depth = int(args[1])
+                path = args[2] if len(args) > 2 else "."
+            except ValueError:
+                self.print_output("tree: неверный аргумент глубины")
+                return
+        
+        try:
+            tree_lines = self.vfs.tree_traverse(path, depth=depth)
+            if not tree_lines:
+                self.print_output(f"{path} [пустая директория]")
+                return
+            
+            self.print_output(path)
+            for line in tree_lines:
+                self.print_output(line)
+        except Exception as e:
+            self.print_output(f"Ошибка tree: {str(e)}")
+    
+    def cmd_tac(self, args):
+        if not args:
+            self.print_output("tac: требуется указать файл")
+            return
+        
+        file_path = args[0]
+        try:
+            content = self.vfs.get_file_content(file_path)
+            if content is None:
+                self.print_output(f"tac: {file_path}: Нет такого файла")
+                return
+            
+            lines = content.split('\n')
+            reversed_lines = reversed(lines)
+            
+            for line in reversed_lines:
+                self.print_output(line)
+        except Exception as e:
+            self.print_output(f"Ошибка tac: {str(e)}")
+    def cmd_script(self, args):
+        if not args:
+            self.print_output("Использование: script <путь_к_скрипту>")
+            return
+    
+        script_path = args[0]
+        if not os.path.exists(script_path):
+            self.print_output(f"Ошибка: скрипт '{script_path}' не найден")
+            return
+    
+        self.script_path = script_path
+        self.startup_script()
+
+>>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
     def cmd_vfs(self, args):
         if not args:
             self.print_output("Использование: vfs")
@@ -514,7 +610,10 @@ class TerminalEmulator:
             self.print_output(f"Текущая директория: {self.vfs.get_curr_path()}")
         except Exception as e:
             self.print_output(f"Ошибка загрузки VFS: {str(e)}")
+<<<<<<< HEAD
     
+=======
+>>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
 
     def command_reader(self, command):
         parsed = self.parse_env_var(command)
@@ -534,7 +633,11 @@ class TerminalEmulator:
         elif cmd == "pwd":
             self.cmd_pwd()
         elif cmd == "echo":
+<<<<<<< HEAD
             self.print_output(" ".join(args).rstrip('"').lstrip('"'))
+=======
+            self.print_output(" ".join(args))
+>>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
         elif cmd == "cls":
             self.output_area.config(state=tk.NORMAL)
             self.output_area.delete(1.0, tk.END)
@@ -543,12 +646,15 @@ class TerminalEmulator:
             self.cmd_tree(args)
         elif cmd == "tac":
             self.cmd_tac(args)
+<<<<<<< HEAD
         elif cmd == "touch":
             self.cmd_touch(args)
         elif cmd == "cp":
             self.cmd_cp(args)
         elif cmd == "savevfs":
             self.cmd_savevfs(args)
+=======
+>>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
         elif cmd == "script":
             self.cmd_script(args)
         elif cmd == "vfs":
@@ -562,7 +668,11 @@ class TerminalEmulator:
         if not command:
             return
         
+<<<<<<< HEAD
         self.print_output(f"{self.prompt_text}> {command}")
+=======
+        self.print_output(f"{self.prompt_text} {command}")
+>>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
         try:
             self.command_reader(command)
         except Exception as e:
@@ -573,8 +683,17 @@ class TerminalEmulator:
     
 
     
+<<<<<<< HEAD
 root = tk.Tk()
 root.geometry("800x600") 
 
 terminal = TerminalEmulator(root, "", "")
 root.mainloop()                     
+=======
+root = tk.Tk()
+root.geometry("800x600") 
+
+terminal = TerminalEmulator(root, "", "")
+root.mainloop()                     
+root = tk.Tk()
+>>>>>>> 3f746cb617a5d18f94400b9d7663766a3051ad93
